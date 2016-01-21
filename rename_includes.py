@@ -34,7 +34,7 @@ def main( argv ):
     for subdir, dirs, files in os.walk( args.input ):
         for file in files:
             filepath = subdir + os.sep + file
-            if filepath.endswith( ".hpp" ) or filepath.endswith( ".cpp" ):
+            if filepath.endswith( ".hpp" ) or filepath.endswith( ".cpp" ) or filepath.endswith( ".h" ):
                 with open( filepath , "r" ) as f:
                     new = ""
                     for line in f.readlines():
@@ -43,6 +43,7 @@ def main( argv ):
                         if searchString in line:
                            new += line.replace( searchString , "SuperToll/Common/Util/NumericalConstants.h" )
                            logging.info( "Found occurence in " + filepath )
+                        
                         # prefix = "#include <formula"
                         # if line.startswith( prefix ):
                         #    new += "#include <formula/core" + line[ len( prefix ) : ]
