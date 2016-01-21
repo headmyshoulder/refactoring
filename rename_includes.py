@@ -13,7 +13,8 @@ import os
 
 def parseCmd( argv ):
     parser = argparse.ArgumentParser( description = "Application description" )
-    parser.add_argument( "input" , type=str )
+    parser.add_argument( "input" , type=str , help="Input directory" )
+    parser.add_argument( "--dry" , dest='dry' , action='store_true' )
     args = parser.parse_args( argv[1:] )
     return args
 
@@ -28,6 +29,8 @@ def main( argv ):
     initLogging( args )
     
     logging.info( "Processing directory " + args.input )
+    if args.dry:
+        logging.info( "Dry run without modification" )
     for subdir, dirs, files in os.walk( args.input ):
         for file in files:
             filepath = subdir + os.sep + file
@@ -35,14 +38,21 @@ def main( argv ):
                 with open( filepath , "r" ) as f:
                     new = ""
                     for line in f.readlines():
-                        prefix = "#include <formula"
-                        if line.startswith( prefix ):
-                            new += "#include <formula/core" + line[ len( prefix ) : ]
+                        
+                        searchString = "SuperToll/Common/Util/NumericConstants.h"
+                        if searchString in line:
+                           new += line.replace( searchString , "SuperToll/Common/Util/NumericalConstants.h" )
+                           logging.info( "Found occurence in " + filepath )
+                        # prefix = "#include <formula"
+                        # if line.startswith( prefix ):
+                        #    new += "#include <formula/core" + line[ len( prefix ) : ]
+                        
                         else:
                             new += line
                     logging.info( "Processing source file " + filepath )
-                with open( filepath , "w" ) as f:
-                    f.write( new )
+                if not args.dry:
+                    with open( filepath , "w" ) as f:
+                        f.write( new )
                         
                         
 
