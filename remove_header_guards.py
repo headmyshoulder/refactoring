@@ -15,7 +15,8 @@ import os
 
 def parse_cmd( argv ):
     parser = argparse.ArgumentParser( description = "Application description" )
-    parser.add_argument( "input" , type=str )
+    parser.add_argument( "input" , type=str , help="Input directory" )
+    parser.add_argument( "--dry" , dest='dry' , help="Dry run without modification" , action='store_true' )
     args = parser.parse_args( argv[1:] )
     return args
 
@@ -41,10 +42,12 @@ def main( argv ):
     init_logging( args )
     
     logging.info( "Processing directory " + args.input )
+    if args.dry:
+        logging.info( "Dry run without modification" )
     for subdir, dirs, files in os.walk( args.input ):
         for file in files:
             filepath = subdir + os.sep + file
-            if filepath.endswith( ".hpp" ):
+            if filepath.endswith( ".hpp" ) or filepath.endswith( ".h" ):
                 with open( filepath , "r" ) as f:
                     lines = []
                     for line in f.readlines():
@@ -64,9 +67,10 @@ def main( argv ):
                             newlines.append( "#pragma once\n" )
                             newlines.extend( lines[l2+1:l3] )
                             newlines.extend( lines[l3+1:] )
-                            with open( filepath , "w" ) as f:
-                                for line in newlines:
-                                    f.write( line )
+                            if not args.dry:
+                                with open( filepath , "w" ) as f:
+                                    for line in newlines:
+                                        f.write( line )
                         else:
                             logging.info( filepath + " position of #ifndef, #defines, #endifs is strange." )
                     else:

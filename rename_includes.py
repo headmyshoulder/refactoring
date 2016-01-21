@@ -14,7 +14,7 @@ import os
 def parseCmd( argv ):
     parser = argparse.ArgumentParser( description = "Application description" )
     parser.add_argument( "input" , type=str , help="Input directory" )
-    parser.add_argument( "--dry" , dest='dry' , action='store_true' )
+    parser.add_argument( "--dry" , dest='dry' , help="Dry run without modification" , action='store_true' )
     args = parser.parse_args( argv[1:] )
     return args
 
