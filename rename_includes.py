@@ -34,15 +34,18 @@ def main( argv ):
     for subdir, dirs, files in os.walk( args.input ):
         for file in files:
             filepath = subdir + os.sep + file
-            if filepath.endswith( ".hpp" ) or filepath.endswith( ".cpp" ) or filepath.endswith( ".h" ):
+            # if filepath.endswith( ".hpp" ) or filepath.endswith( ".cpp" ) or filepath.endswith( ".h" ):
+            if filepath.endswith( ".cpp" ):
                 with open( filepath , "r" ) as f:
                     new = ""
+                    changed = False                    
                     for line in f.readlines():
                         
-                        searchString = "SuperToll/Common/Util/NumericConstants.h"
+                        searchString = "ETCStateMachine"
                         if searchString in line:
-                           new += line.replace( searchString , "SuperToll/Common/Util/NumericalConstants.h" )
-                           logging.info( "Found occurence in " + filepath )
+                            changed = True
+                            new += line.replace( searchString , "SegmentMautStateMachine" )
+                            logging.info( "Found occurence in " + filepath )
                         
                         # prefix = "#include <formula"
                         # if line.startswith( prefix ):
@@ -51,7 +54,7 @@ def main( argv ):
                         else:
                             new += line
                     logging.info( "Processing source file " + filepath )
-                if not args.dry:
+                if not args.dry and changed:
                     with open( filepath , "w" ) as f:
                         f.write( new )
                         
